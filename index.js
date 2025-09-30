@@ -1,15 +1,22 @@
 const { REST, Routes } = require('discord.js');
 const { clientId, guildId, token } = require('./config.json');
-const rest = new REST({ version: '10' }).setToken(token);
 
-// ...
+(async () => {
+    const rest = new REST({ version: '10' }).setToken(token);
 
-// for guild-based commands
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
-	.then(() => console.log('Successfully deleted all guild commands.'))
-	.catch(console.error);
+    console.log('Attempting to delete all slash commands...');
 
-// for global commands
-rest.put(Routes.applicationCommands(clientId), { body: [] })
-	.then(() => console.log('Successfully deleted all application commands.'))
-	.catch(console.error);
+    try {
+        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
+        console.log('Successfully deleted all guild commands.');
+    } catch (error) {
+        console.error('Error deleting guild commands:', error.message);
+    }
+
+    try {
+        await rest.put(Routes.applicationCommands(clientId), { body: [] });
+        console.log('Successfully deleted all application commands (Global).');
+    } catch (error) {
+        console.error('Error deleting global commands:', error.message);
+    }
+})();
